@@ -9,8 +9,12 @@ import { Server, Socket } from 'socket.io';
 
 @WebSocketGateway({
   cors: {
-    origin: '*',
+    origin: '*', // TODO: In production, specify actual origins
+    methods: ['GET', 'POST'],
+    allowedHeaders: ['*'],
+    credentials: false,
   },
+  transports: ['websocket', 'polling'],
 })
 export class MarketGateway implements OnGatewayConnection, OnGatewayDisconnect {
   private readonly logger = new Logger(MarketGateway.name);
@@ -26,13 +30,8 @@ export class MarketGateway implements OnGatewayConnection, OnGatewayDisconnect {
     this.logger.log(`Client disconnected: ${client.id}`);
   }
 
-  // Method to broadcast market updates to all connected clients
   broadcastMarketUpdate(data: any) {
+    this.logger.debug('Broadcasting market update:', data);
     this.server.emit('marketUpdate', data);
-  }
-
-  // Method to broadcast new character reveals
-  broadcastCharacterReveal(character: string, position: number) {
-    this.server.emit('characterReveal', { character, position });
   }
 }

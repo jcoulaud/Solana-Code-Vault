@@ -59,15 +59,15 @@ importers:
       '@solana/web3.js':
         specifier: ^1.98.0
         version: 1.98.0(bufferutil@4.0.8)(utf-8-validate@5.0.10)
+      axios:
+        specifier: ^1.7.9
+        version: 1.7.9
       cache-manager:
         specifier: ^6.3.1
         version: 6.3.1
       cache-manager-redis-store:
         specifier: ^3.0.1
         version: 3.0.1
-      helius-sdk:
-        specifier: ^1.4.0
-        version: 1.4.0(arweave@1.15.5)(bufferutil@4.0.8)(fastestsmallesttextencoderdecoder@1.0.22)(typescript@5.7.2)(utf-8-validate@5.0.10)
       pg:
         specifier: ^8.13.1
         version: 8.13.1
