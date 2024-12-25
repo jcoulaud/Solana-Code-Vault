@@ -1,0 +1,16 @@
+{
+  "name": "@codevault/utils",
+  "version": "0.0.1",
+  "private": true,
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "scripts": {
+    "build": "tsc",
+    "lint": "eslint \"src/**/*.ts*\""
+  },
+  "devDependencies": {
+    "typescript": "^5.2.2",
+    "@types/node": "^20.0.0",
+    "eslint": "^8.48.0"
+  }
+}
