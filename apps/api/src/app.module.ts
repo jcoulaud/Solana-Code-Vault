@@ -4,6 +4,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { GameState } from './entities/game.entity';
 import { MarketData } from './entities/market.entity';
 import { Winner } from './entities/winner.entity';
+import { GameModule } from './modules/game/game.module';
 import { MarketModule } from './modules/market/market.module';
 
 @Module({
@@ -21,11 +22,12 @@ import { MarketModule } from './modules/market/market.module';
         password: configService.get('DATABASE_PASSWORD'),
         database: configService.get('DATABASE_NAME'),
         entities: [MarketData, GameState, Winner],
-        synchronize: true, // Set to false in production
+        synchronize: configService.get('NODE_ENV') !== 'production',
       }),
       inject: [ConfigService],
     }),
     MarketModule,
+    GameModule,
   ],
 })
 export class AppModule {}
