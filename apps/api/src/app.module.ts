@@ -4,6 +4,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { GameState } from './entities/game.entity';
 import { MarketData } from './entities/market.entity';
 import { Winner } from './entities/winner.entity';
+import { MarketModule } from './modules/market/market.module';
 
 @Module({
   imports: [
@@ -24,6 +25,7 @@ import { Winner } from './entities/winner.entity';
       }),
       inject: [ConfigService],
     }),
+    MarketModule,
   ],
 })
 export class AppModule {}
