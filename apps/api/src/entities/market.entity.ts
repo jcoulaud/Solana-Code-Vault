@@ -5,17 +5,17 @@ import {
   PrimaryGeneratedColumn,
 } from 'typeorm';
 
-@Entity('market_data')
+@Entity()
 export class MarketData {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column('decimal', { precision: 20, scale: 2 })
+  @Column('decimal')
   marketCap: number;
 
-  @Column('decimal', { precision: 20, scale: 8 })
+  @Column('decimal')
   price: number;
 
   @CreateDateColumn()
-  timestamp: Date;
+  createdAt: Date;
 }

@@ -14,13 +14,13 @@ interface GameState {
   isActive: boolean;
 }
 
-const HIDDEN_CHARS = 5; // Last 5 chars hidden until final milestone to prevent bruteforce
+const HIDDEN_CHARS = 10; // Last 10 chars hidden until final milestone
 const FINAL_MILESTONE = 100_000_000; // $100M for final reveal
 const RATE_LIMIT_WINDOW = 2000; // 2 seconds between attempts
 const MAX_ATTEMPTS_PER_WALLET = 5; // Limit total attempts per wallet
 const MAX_WINNERS = 100;
 
-// Reward percentages based on position
+// Reward percentages based on claimed position
 const REWARD_PERCENTAGES = {
   1: 10, // 10% for 1st
   2: 7, // 7% for 2nd
@@ -54,7 +54,7 @@ export class GameService {
     const state = await this.redis.get(this.REDIS_GAME_KEY);
     if (!state) {
       const initialState: GameState = {
-        revealedCharacters: Array(this.secretCode.length).fill('_'),
+        revealedCharacters: Array(this.secretCode.length).fill(''),
         currentMilestone: 0,
         isActive: true,
       };
@@ -69,10 +69,9 @@ export class GameService {
   }
 
   async handleMilestoneReached(marketCap: number): Promise<void> {
-    // First check if we're at or past final milestone
     if (marketCap >= FINAL_MILESTONE) {
       const state = await this.getGameState();
-      if (state.revealedCharacters.includes('_')) {
+      if (state.revealedCharacters.some((char) => char === '')) {
         await this.revealAllCharacters(state);
       }
       return;
@@ -83,13 +82,15 @@ export class GameService {
 
     if (
       milestone > state.currentMilestone &&
-      state.revealedCharacters.includes('_') &&
+      state.revealedCharacters.some((char) => char === '') &&
       this.getRevealedCount(state) < this.secretCode.length - HIDDEN_CHARS
     ) {
       this.logger.debug(`New milestone reached: ${milestone}M`);
       state.currentMilestone = milestone;
 
-      const nextPosition = state.revealedCharacters.indexOf('_');
+      const nextPosition = state.revealedCharacters.findIndex(
+        (char) => char === '',
+      );
       if (nextPosition !== -1) {
         state.revealedCharacters[nextPosition] = this.secretCode[nextPosition];
         await this.saveGameState(state);
@@ -104,12 +105,12 @@ export class GameService {
   }
 
   private getRevealedCount(state: GameState): number {
-    return state.revealedCharacters.filter((char) => char !== '_').length;
+    return state.revealedCharacters.filter((char) => char !== '').length;
   }
 
   private async revealAllCharacters(state: GameState): Promise<void> {
     for (let i = 0; i < this.secretCode.length; i++) {
-      if (state.revealedCharacters[i] === '_') {
+      if (state.revealedCharacters[i] === '') {
         state.revealedCharacters[i] = this.secretCode[i];
       }
     }
@@ -241,7 +242,19 @@ export class GameService {
     await this.redis.incr(key);
   }
 
-  async getCurrentState(): Promise<GameState> {
-    return this.getGameState();
+  async getCurrentState(): Promise<{
+    revealedCharacters: string;
+    winners: Winner[];
+  }> {
+    const state = await this.getGameState();
+    const winners = await this.winnerRepository.find({
+      order: { timestamp: 'DESC' },
+      take: 10,
+    });
+
+    return {
+      revealedCharacters: state.revealedCharacters.join(''),
+      winners,
+    };
   }
 }

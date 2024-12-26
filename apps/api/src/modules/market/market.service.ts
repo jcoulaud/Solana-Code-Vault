@@ -24,14 +24,22 @@ export class MarketService {
     const savedData = await this.marketDataRepository.save({
       marketCap: data.marketCap,
       price: data.price,
+      createdAt: new Date(),
     });
 
-    // Check for milestone and character reveal
+    const gameState = await this.gameService.getCurrentState();
+
     await this.gameService.handleMilestoneReached(data.marketCap);
-    return savedData;
+
+    return {
+      marketCap: savedData.marketCap,
+      revealedCharacters: gameState.revealedCharacters,
+      winners: gameState.winners,
+      lastUpdate: savedData.createdAt.toISOString(),
+    };
   }
 
-  @Interval(30000)
+  @Interval(10000)
   async updateMarketData() {
     try {
       const marketData = await this.getLatestMarketData();

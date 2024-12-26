@@ -5,8 +5,8 @@ import { MarketService } from './market.service';
 export class MarketController {
   constructor(private readonly marketService: MarketService) {}
 
-  @Get('current')
-  async getCurrentMarket() {
+  @Get('state')
+  async getState() {
     return this.marketService.getLatestMarketData();
   }
 }
