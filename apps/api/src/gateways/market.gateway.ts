@@ -7,10 +7,18 @@ import {
 } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
 
-interface CharacterReveal {
-  position: number;
-  character: string;
+export interface CharacterReveal {
+  position?: number;
+  character?: string;
   revealedCharacters: string[];
+  remainingHidden?: number;
+  allRevealed?: boolean;
+}
+
+export interface WinnerReveal {
+  position: number;
+  wallet: string;
+  reward: number;
 }
 
 @WebSocketGateway({
@@ -44,5 +52,10 @@ export class MarketGateway implements OnGatewayConnection, OnGatewayDisconnect {
   broadcastCharacterReveal(data: CharacterReveal) {
     this.logger.debug('Broadcasting character reveal:', data);
     this.server.emit('characterReveal', data);
+  }
+
+  broadcastWinner(data: WinnerReveal) {
+    this.logger.debug('Broadcasting new winner:', data);
+    this.server.emit('newWinner', data);
   }
 }

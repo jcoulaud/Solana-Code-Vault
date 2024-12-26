@@ -27,13 +27,7 @@ export class MarketService {
     });
 
     // Check for milestone and character reveal
-    const reveal = await this.gameService.handleMilestoneReached(
-      data.marketCap,
-    );
-    if (reveal) {
-      this.marketGateway.broadcastCharacterReveal(JSON.parse(reveal));
-    }
-
+    await this.gameService.handleMilestoneReached(data.marketCap);
     return savedData;
   }
 

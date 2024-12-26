@@ -10,18 +10,18 @@ export class Winner {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column('varchar')
+  @Column()
   walletAddress: string;
 
-  @Column('int')
-  position: number;
+  @Column()
+  position: number; // 1-100
 
-  @Column('decimal', { precision: 20, scale: 2 })
-  reward: number;
+  @Column('decimal', { precision: 2, scale: 2 })
+  rewardPercentage: number;
 
-  @Column('boolean', { default: false })
+  @Column({ default: false })
   claimed: boolean;
 
   @CreateDateColumn()
-  claimedAt: Date;
+  timestamp: Date;
 }
