@@ -66,11 +66,18 @@ export const useMarket = () => {
     // WebSocket subscription
     const unsubscribe = wsService.subscribe((update: MarketUpdate) => {
       if (!mounted) return;
-      setState((prevState) => ({
-        ...prevState,
-        ...update.data,
-        lastUpdate: new Date().toISOString(),
-      }));
+      setState((prevState) => {
+        if (update.type === 'WINNER_UPDATE' && update.data.winners) {
+          // Fetch fresh state after winner update
+          fetchMarketState();
+          return prevState;
+        }
+        return {
+          ...prevState,
+          ...update.data,
+          lastUpdate: new Date().toISOString(),
+        };
+      });
     });
 
     return () => {

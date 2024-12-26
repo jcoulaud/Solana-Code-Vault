@@ -28,17 +28,16 @@ export const MarketCapDisplay = memo(
     const exactTime = format(new Date(lastUpdate), 'MMM d, yyyy HH:mm:ss');
 
     return (
-      <div className={`rounded-lg bg-gray-800 p-6 shadow-lg ${className}`}>
-        <h2 className='text-xl font-bold text-white mb-4'>Market Cap</h2>
+      <div className={className}>
         <div
-          className={`text-3xl font-bold text-green-400 transition-all duration-500 ${
-            isUpdating ? 'scale-105 text-green-300' : ''
+          className={`text-3xl font-bold text-green-600 transition-all duration-500 ${
+            isUpdating ? 'scale-105 text-green-500' : ''
           }`}>
           {formattedMarketCap}
         </div>
         <div className='mt-2'>
-          <div className='text-sm text-gray-400'>Last updated: {timeAgo}</div>
-          <div className='text-[10px] text-gray-600 font-light tracking-wide'>{exactTime}</div>
+          <div className='text-sm text-gray-600'>Last updated: {timeAgo}</div>
+          <div className='text-[10px] text-gray-500 font-light tracking-wide'>{exactTime}</div>
         </div>
       </div>
     );

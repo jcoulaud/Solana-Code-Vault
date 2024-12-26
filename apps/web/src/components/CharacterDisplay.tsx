@@ -40,42 +40,51 @@ export const CharacterDisplay = memo(
     }, [revealedCharacters, revealedCount]);
 
     return (
-      <div className={`rounded-lg bg-gray-800 p-6 shadow-lg ${className}`}>
-        <div className='flex justify-between items-center mb-4'>
-          <h2 className='text-xl font-bold text-white'>Characters</h2>
-          {revealedCount > 0 && (
+      <div className={className}>
+        <div className='flex justify-between items-center mb-6'>
+          <h2 className='text-lg font-medium tracking-tight text-gray-950'>Characters</h2>
+          <div className='flex items-center gap-4'>
+            <div className='text-xs text-gray-500'>
+              {revealedCount}/{TOTAL_CHARACTERS} revealed
+            </div>
             <button
               onClick={handleCopy}
-              className='px-3 py-1 text-sm bg-gray-700 hover:bg-gray-600 text-white rounded-md transition-colors'>
+              className={`
+                px-3 py-1 text-sm rounded-md transition-colors
+                ${
+                  copySuccess
+                    ? 'bg-green-100 text-green-700 hover:bg-green-200'
+                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                }
+              `}>
               {copySuccess ? 'Copied!' : 'Copy Code'}
             </button>
-          )}
+          </div>
         </div>
-        <div className='grid grid-cols-10 gap-2.5 gap-y-4 select-none' aria-label='Character grid'>
+        <div className='grid grid-cols-15 gap-2' aria-label='Character grid'>
           {Array.from({ length: TOTAL_CHARACTERS }).map((_, index) => {
             const char = revealedCharacters[index] || '';
             const isNewlyRevealed = index === lastRevealedIndex;
             return (
-              <div key={`char-${index}`} className='relative'>
+              <div key={`char-${index}`} className='relative aspect-square'>
                 <div
-                  className={`w-10 h-10 flex items-center justify-center rounded-md text-white font-mono text-lg
+                  className={`
+                    w-full h-full flex items-center justify-center rounded-md text-base font-mono
                     transition-all duration-500 relative
-                    ${char ? 'bg-green-500' : 'bg-gray-600'}
-                    ${isNewlyRevealed ? 'scale-105 bg-green-300 rotate-3' : ''}`}>
+                    ${char ? 'bg-green-500 text-white' : 'bg-gray-100 text-gray-400'}
+                    ${isNewlyRevealed ? 'scale-105 bg-green-400 rotate-3' : ''}
+                  `}>
                   <span
                     className={`transition-all duration-500 ${isNewlyRevealed ? 'scale-110' : ''}`}>
                     {char || '?'}
                   </span>
-                  <span className='absolute top-0.5 left-0.5 text-[9px] opacity-50 select-none leading-none'>
+                  <span className='absolute top-1 left-1 text-[8px] opacity-50 select-none leading-none text-gray-300'>
                     {index + 1}
                   </span>
                 </div>
               </div>
             );
           })}
-        </div>
-        <div className='mt-4 text-sm text-gray-400'>
-          {revealedCount}/{TOTAL_CHARACTERS} revealed
         </div>
       </div>
     );

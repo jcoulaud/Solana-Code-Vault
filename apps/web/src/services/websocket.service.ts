@@ -80,7 +80,7 @@ export class WebSocketService {
         this.notifySubscribers({
           type: 'WINNER_UPDATE',
           data: {
-            winners: [data],
+            winners: data,
           },
         });
       });

@@ -19,6 +19,8 @@ const FINAL_MILESTONE = 100_000_000; // $100M for final reveal
 const RATE_LIMIT_WINDOW = 2000; // 2 seconds between attempts
 const MAX_ATTEMPTS_PER_WALLET = 5; // Limit total attempts per wallet
 const MAX_WINNERS = 100;
+const TOTAL_SUPPLY = 1_000_000_000; // 1B total supply
+const PRIZE_POOL = TOTAL_SUPPLY * 0.1; // 10% of total supply for prize pool
 
 // Reward percentages based on claimed position
 const REWARD_PERCENTAGES = {
@@ -194,7 +196,7 @@ export class GameService {
     // Create winner entry
     const position = winnerCount + 1;
     const rewardPercentage = Number(this.getRewardPercentage(position));
-    const tokenAmount = Math.floor(1_000_000_000 * (rewardPercentage / 100));
+    const tokenAmount = Math.floor(PRIZE_POOL * (rewardPercentage / 100));
 
     const winner = this.winnerRepository.create({
       walletAddress: wallet,
@@ -205,12 +207,14 @@ export class GameService {
 
     await this.winnerRepository.save(winner);
 
-    // Broadcast new winner
-    this.marketGateway.broadcastWinner({
-      position,
-      wallet,
-      reward: rewardPercentage,
+    // Get updated winners list
+    const winners = await this.winnerRepository.find({
+      order: { createdAt: 'DESC' },
+      take: 10,
     });
+
+    // Broadcast new winner with complete list
+    this.marketGateway.broadcastWinner(winners);
 
     return {
       success: true,

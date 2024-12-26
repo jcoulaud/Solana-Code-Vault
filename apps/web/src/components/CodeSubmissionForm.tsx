@@ -150,44 +150,58 @@ export const CodeSubmissionForm = memo(({ className = '' }: CodeSubmissionFormPr
   }, [toast]);
 
   return (
-    <form onSubmit={handleSubmit} className={`space-y-4 ${className}`}>
+    <form onSubmit={handleSubmit} className={`space-y-6 ${className}`}>
       <div>
-        <label htmlFor='code' className='block text-sm font-medium text-gray-200 mb-2'>
-          Enter Code (100 characters)
-        </label>
-        <textarea
-          id='code'
-          value={code}
-          onChange={handleCodeChange}
-          maxLength={100}
-          className='w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-md text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500'
-          placeholder='Enter your 100-character code here...'
-          rows={3}
-          disabled={isSubmitting}
-        />
-        <div className='text-sm text-gray-400 mt-1'>{code.length}/100 characters</div>
+        <div>
+          <textarea
+            id='code'
+            value={code}
+            onChange={handleCodeChange}
+            maxLength={100}
+            rows={3}
+            className='block w-full rounded-lg border-0 bg-gray-50 py-3 px-4 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-200 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-blue-500 resize-none font-mono text-base'
+            placeholder='Enter your 100-character code here...'
+            disabled={isSubmitting}
+          />
+        </div>
+        <div className='mt-2 flex justify-between text-sm text-gray-500'>
+          <span>{code.length}/100 characters</span>
+          {code.length > 0 && (
+            <button
+              type='button'
+              onClick={() => setCode('')}
+              className='text-gray-400 hover:text-gray-500'>
+              Clear
+            </button>
+          )}
+        </div>
       </div>
 
-      <div className='flex justify-center'>
-        <ReCAPTCHA
-          ref={recaptchaRef}
-          sitekey={process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY || ''}
-          onChange={handleCaptchaChange}
-          onExpired={handleCaptchaExpired}
-          onError={handleCaptchaError}
-          theme='dark'
-        />
-      </div>
+      {code.length > 0 && (
+        <div className='flex justify-center'>
+          <div className='overflow-hidden rounded-lg shadow-sm'>
+            <ReCAPTCHA
+              ref={recaptchaRef}
+              sitekey={process.env.NEXT_PUBLIC_RECAPTCHA_SITE_KEY || ''}
+              onChange={handleCaptchaChange}
+              onExpired={handleCaptchaExpired}
+              onError={handleCaptchaError}
+              theme='light'
+              size='normal'
+            />
+          </div>
+        </div>
+      )}
 
       <button
         type='submit'
         disabled={isSubmitting || !captchaToken || !isConnected}
         className={`
-          w-full px-4 py-2 text-white font-semibold rounded-md
+          w-full rounded-lg px-4 py-3 text-base font-semibold text-white shadow-sm
           ${
             isSubmitting || !captchaToken || !isConnected
-              ? 'bg-gray-600 cursor-not-allowed'
-              : 'bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-gray-800'
+              ? 'bg-gray-200 cursor-not-allowed'
+              : 'bg-blue-600 hover:bg-blue-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600'
           }
         `}>
         {!isConnected ? 'Connect Wallet to Submit' : isSubmitting ? 'Submitting...' : 'Submit Code'}
