@@ -2,7 +2,6 @@
 
 import { WalletMultiButton } from '@solana/wallet-adapter-react-ui';
 import dynamic from 'next/dynamic';
-import { useCallback } from 'react';
 import { CharacterDisplay } from '../components/CharacterDisplay';
 import { CodeSubmissionForm } from '../components/CodeSubmissionForm';
 import { MarketCapDisplay } from '../components/MarketCapDisplay';
@@ -13,22 +12,7 @@ import { useMarket } from '../hooks/useMarket';
 const WalletProvider = dynamic(() => import('../providers/WalletProvider'), { ssr: false });
 
 export default function Home() {
-  const { marketCap, revealedCharacters, winners, lastUpdate, isLoading, error, submitCode } =
-    useMarket();
-
-  const handleSubmit = useCallback(
-    async (code: string, captchaToken: string) => {
-      try {
-        const response = await submitCode(code, captchaToken);
-        if (!response.success) {
-          throw new Error(response.message);
-        }
-      } catch (err) {
-        throw err;
-      }
-    },
-    [submitCode],
-  );
+  const { marketCap, revealedCharacters, winners, lastUpdate, isLoading, error } = useMarket();
 
   if (isLoading) {
     return (
@@ -63,11 +47,11 @@ export default function Home() {
             </div>
 
             <div className='space-y-6'>
-              <CodeSubmissionForm
-                onSubmit={handleSubmit}
-                className='bg-gray-800 rounded-lg p-6 shadow-lg'
+              <CodeSubmissionForm className='bg-gray-800 rounded-lg p-6 shadow-lg' />
+              <WinnersList
+                winners={winners}
+                currentPrice={marketCap / (winners.reduce((sum, w) => sum + w.tokenAmount, 0) || 1)}
               />
-              <WinnersList winners={winners} totalTokens={2000000} />
             </div>
           </div>
         </div>

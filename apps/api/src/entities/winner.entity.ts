@@ -16,12 +16,12 @@ export class Winner {
   @Column()
   position: number; // 1-100
 
-  @Column('decimal', { precision: 2, scale: 2 })
+  @Column('decimal', { precision: 10, scale: 2 })
   rewardPercentage: number;
 
-  @Column({ default: false })
-  claimed: boolean;
+  @Column('decimal', { precision: 20, scale: 0, default: 0 })
+  tokenAmount: number;
 
   @CreateDateColumn()
-  timestamp: Date;
+  createdAt: Date;
 }

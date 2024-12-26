@@ -5,20 +5,21 @@ export interface MarketState {
   lastUpdate: string;
 }
 
-export interface Winner {
-  address: string;
-  timestamp: string;
-  prize: number;
-  tokens: number;
-}
-
 export interface MarketUpdate {
   type: 'MARKET_UPDATE' | 'WINNER_UPDATE' | 'CHARACTER_REVEAL';
   data: Partial<MarketState>;
 }
 
+export interface Winner {
+  position: number;
+  walletAddress: string;
+  rewardPercentage: number;
+  tokenAmount: number;
+}
+
 export interface SubmissionResponse {
   success: boolean;
-  message: string;
-  revealedCharacter?: string;
+  position?: number;
+  reward?: number;
+  message?: string;
 }

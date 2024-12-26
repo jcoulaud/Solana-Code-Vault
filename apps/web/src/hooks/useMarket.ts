@@ -96,17 +96,23 @@ export const useMarket = () => {
           body: JSON.stringify({
             code,
             captchaToken,
+            walletAddress: window.solana?.publicKey?.toString(),
           }),
+          credentials: 'include',
         });
 
+        const data = await response.json();
+
         if (!response.ok) {
-          const errorText = await response.text();
-          throw new Error(`Submission failed: ${errorText}`);
+          throw new Error(data.error || data.message || 'Failed to submit code');
         }
 
-        return await response.json();
+        return data;
       } catch (err) {
-        throw new Error(err instanceof Error ? err.message : 'Failed to submit code');
+        if (err instanceof Error) {
+          throw err;
+        }
+        throw new Error('Failed to submit code');
       }
     },
     [],

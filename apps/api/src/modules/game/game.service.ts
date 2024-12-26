@@ -1,5 +1,5 @@
 import { InjectRedis } from '@nestjs-modules/ioredis';
-import { Injectable, Logger } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { InjectRepository } from '@nestjs/typeorm';
 import axios from 'axios';
@@ -157,13 +157,16 @@ export class GameService {
     // Verify CAPTCHA
     const isCaptchaValid = await this.verifyCaptcha(captchaToken);
     if (!isCaptchaValid) {
-      throw new Error('Invalid CAPTCHA');
+      throw new HttpException('Invalid CAPTCHA', HttpStatus.BAD_REQUEST);
     }
 
     // Check wallet attempt count
     const attempts = await this.getWalletAttempts(wallet);
     if (attempts >= MAX_ATTEMPTS_PER_WALLET) {
-      throw new Error('Maximum attempts exceeded for this wallet');
+      throw new HttpException(
+        'Maximum attempts exceeded for this wallet',
+        HttpStatus.TOO_MANY_REQUESTS,
+      );
     }
 
     // Check if wallet already won
@@ -171,7 +174,7 @@ export class GameService {
       where: { walletAddress: wallet },
     });
     if (existingWinner) {
-      throw new Error('Wallet has already won');
+      throw new HttpException('Wallet has already won', HttpStatus.CONFLICT);
     }
 
     // Increment attempt counter before checking code
@@ -190,13 +193,14 @@ export class GameService {
 
     // Create winner entry
     const position = winnerCount + 1;
-    const rewardPercentage = this.getRewardPercentage(position);
+    const rewardPercentage = Number(this.getRewardPercentage(position));
+    const tokenAmount = Math.floor(1_000_000_000 * (rewardPercentage / 100));
 
     const winner = this.winnerRepository.create({
       walletAddress: wallet,
       position,
       rewardPercentage,
-      claimed: false,
+      tokenAmount,
     });
 
     await this.winnerRepository.save(winner);
@@ -217,17 +221,47 @@ export class GameService {
 
   private async verifyCaptcha(token: string): Promise<boolean> {
     try {
+      const secretKey = this.configService.get('RECAPTCHA_SECRET_KEY');
+      if (!secretKey) {
+        this.logger.error(
+          'RECAPTCHA_SECRET_KEY not found in environment variables',
+        );
+        throw new Error('CAPTCHA verification is not properly configured');
+      }
+
       const response = await axios.post(
         'https://www.google.com/recaptcha/api/siteverify',
+        null,
         {
-          secret: this.configService.get('RECAPTCHA_SECRET_KEY'),
-          token,
+          params: {
+            secret: secretKey,
+            response: token,
+          },
         },
       );
-      return response.data.success;
+
+      if (!response.data.success) {
+        this.logger.warn(
+          'CAPTCHA verification failed:',
+          response.data['error-codes'],
+        );
+        throw new Error(
+          response.data['error-codes']?.[0] === 'invalid-input-response'
+            ? 'Invalid CAPTCHA response. Please try again.'
+            : 'CAPTCHA verification failed. Please try again.',
+        );
+      }
+
+      return true;
     } catch (error) {
-      this.logger.error('CAPTCHA verification failed:', error);
-      return false;
+      if (axios.isAxiosError(error)) {
+        this.logger.error(
+          'CAPTCHA verification request failed:',
+          error.response?.data || error.message,
+        );
+        throw new Error('CAPTCHA verification failed. Please try again.');
+      }
+      throw error;
     }
   }
 
@@ -248,7 +282,7 @@ export class GameService {
   }> {
     const state = await this.getGameState();
     const winners = await this.winnerRepository.find({
-      order: { timestamp: 'DESC' },
+      order: { createdAt: 'DESC' },
       take: 10,
     });
 
