@@ -207,14 +207,12 @@ export class GameService {
 
     await this.winnerRepository.save(winner);
 
-    // Get updated winners list
-    const winners = await this.winnerRepository.find({
-      order: { createdAt: 'DESC' },
-      take: 10,
+    // Broadcast new winner
+    this.marketGateway.broadcastWinner({
+      position: winner.position,
+      wallet: winner.walletAddress,
+      reward: winner.rewardPercentage,
     });
-
-    // Broadcast new winner with complete list
-    this.marketGateway.broadcastWinner(winners);
 
     return {
       success: true,
