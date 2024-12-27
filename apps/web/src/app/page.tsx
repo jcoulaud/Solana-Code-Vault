@@ -50,8 +50,8 @@ export default function Home() {
           </div>
         </div>
 
-        <main className='py-20 sm:py-28'>
-          <div className='mx-auto max-w-2xl px-6 lg:max-w-7xl lg:px-8'>
+        <main className='pt-24 pb-20 sm:py-28'>
+          <div className='mx-auto max-w-2xl px-4 sm:px-6 lg:max-w-7xl lg:px-8'>
             <p className='mx-auto max-w-3xl text-center text-4xl font-semibold tracking-tight text-gray-950 sm:text-5xl lg:px-12'>
               $10M Prize Pool
             </p>
@@ -81,7 +81,7 @@ export default function Home() {
                 <div className='relative'>
                   <div className='absolute inset-px rounded-lg bg-white lg:rounded-bl-[2rem]'></div>
                   <div className='relative flex flex-col overflow-hidden rounded-[calc(theme(borderRadius.lg)+1px)] lg:rounded-bl-[calc(2rem+1px)]'>
-                    <div className='p-8'>
+                    <div className='p-4 sm:p-8'>
                       <CodeSubmissionForm />
                     </div>
                   </div>
@@ -93,7 +93,7 @@ export default function Home() {
               <div className='relative lg:col-span-2'>
                 <div className='absolute inset-px rounded-lg bg-white lg:rounded-r-[2rem]'></div>
                 <div className='relative flex flex-col overflow-hidden rounded-[calc(theme(borderRadius.lg)+1px)] lg:rounded-r-[calc(2rem+1px)]'>
-                  <div className='p-8'>
+                  <div className='p-4 sm:p-8'>
                     <CharacterDisplay revealedCharacters={revealedCharacters} className='h-full' />
                   </div>
                 </div>
@@ -103,14 +103,14 @@ export default function Home() {
 
             {/* Second Bento Box */}
             <div className='mt-12 relative'>
-              <div className='absolute inset-px rounded-[2rem] bg-white'></div>
-              <div className='relative flex flex-col overflow-hidden rounded-[calc(2rem+1px)]'>
-                <div className='p-8'>
+              <div className='absolute inset-px rounded-lg sm:rounded-[2rem] bg-white'></div>
+              <div className='relative flex flex-col overflow-hidden rounded-[calc(theme(borderRadius.lg)+1px)] sm:rounded-[calc(2rem+1px)]'>
+                <div className='p-4 sm:p-8'>
                   <p className='text-lg font-medium tracking-tight text-gray-950 mb-4'>Winners</p>
                   <WinnersList winners={winners} currentPrice={currentPrice} />
                 </div>
               </div>
-              <div className='pointer-events-none absolute inset-px rounded-[2rem] shadow ring-1 ring-black/5'></div>
+              <div className='pointer-events-none absolute inset-px rounded-lg sm:rounded-[2rem] shadow ring-1 ring-black/5'></div>
             </div>
 
             {/* FAQ Section */}

@@ -43,8 +43,8 @@ export const CharacterDisplay = memo(
       <div className={className}>
         <div className='flex justify-between items-center mb-6'>
           <h2 className='text-lg font-medium tracking-tight text-gray-950'>Characters</h2>
-          <div className='flex items-center gap-4'>
-            <div className='text-xs text-gray-500'>
+          <div className='flex items-center gap-2 sm:gap-4'>
+            <div className='text-[10px] sm:text-xs text-gray-500'>
               {revealedCount}/{TOTAL_CHARACTERS} revealed
             </div>
             <button
@@ -61,7 +61,9 @@ export const CharacterDisplay = memo(
             </button>
           </div>
         </div>
-        <div className='grid grid-cols-15 gap-2' aria-label='Character grid'>
+        <div
+          className='grid grid-cols-10 sm:grid-cols-12 lg:grid-cols-15 gap-1.5 sm:gap-2'
+          aria-label='Character grid'>
           {Array.from({ length: TOTAL_CHARACTERS }).map((_, index) => {
             const char = revealedCharacters[index] || '';
             const isNewlyRevealed = index === lastRevealedIndex;
@@ -69,7 +71,7 @@ export const CharacterDisplay = memo(
               <div key={`char-${index}`} className='relative aspect-square'>
                 <div
                   className={`
-                    w-full h-full flex items-center justify-center rounded-md text-base font-mono
+                    w-full h-full flex items-center justify-center rounded-md text-sm sm:text-base font-mono
                     transition-all duration-500 relative
                     ${char ? 'bg-green-500 text-white' : 'bg-gray-100 text-gray-400'}
                     ${isNewlyRevealed ? 'scale-105 bg-green-400 rotate-3' : ''}
@@ -78,7 +80,7 @@ export const CharacterDisplay = memo(
                     className={`transition-all duration-500 ${isNewlyRevealed ? 'scale-110' : ''}`}>
                     {char || '?'}
                   </span>
-                  <span className='absolute top-1 left-1 text-[8px] opacity-50 select-none leading-none text-gray-300'>
+                  <span className='absolute top-0.5 left-0.5 sm:top-1 sm:left-1 text-[6px] sm:text-[8px] opacity-50 select-none leading-none text-gray-300'>
                     {index + 1}
                   </span>
                 </div>
